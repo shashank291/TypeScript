@@ -1114,8 +1114,8 @@ namespace ts {
             return array;
         }
 
-        function finishNode<T extends Node>(node: T, end?: number): T {
-            node.end = end === undefined ? scanner.getStartPos() : end;
+        function finishNode<T extends Node>(node: T, end = scanner.getStartPos()): T {
+            node.end = end;
 
             if (contextFlags) {
                 node.flags |= contextFlags;
@@ -6659,14 +6659,11 @@ namespace ts {
                     });
                 }
 
-                function parseBracketNameInPropertyAndParamTag() {
-                    let name: Identifier;
-                    let isBracketed: boolean;
+                function parseBracketNameInPropertyAndParamTag(): { name: Identifier, isBracketed: boolean } {
                     // Looking for something like '[foo]' or 'foo'
                     if (parseOptionalToken(SyntaxKind.OpenBracketToken)) {
-                        name = parseJSDocIdentifierName();
+                        const name = parseJSDocIdentifierName();
                         skipWhitespace();
-                        isBracketed = true;
 
                         // May have an optional default, e.g. '[foo = 42]'
                         if (parseOptionalToken(SyntaxKind.EqualsToken)) {
@@ -6674,11 +6671,12 @@ namespace ts {
                         }
 
                         parseExpected(SyntaxKind.CloseBracketToken);
+                        return { name, isBracketed: true };
                     }
-                    else if (tokenIsIdentifierOrKeyword(token())) {
-                        name = parseJSDocIdentifierName();
+                    else { //if (tokenIsIdentifierOrKeyword(token())) {
+                        const name = parseJSDocIdentifierName();
+                        return { name, isBracketed: false };
                     }
-                    return { name, isBracketed };
                 }
 
                 function parseParameterOrPropertyTag(atToken: AtToken, tagName: Identifier, shouldParseParamTag: boolean): JSDocPropertyTag | JSDocParameterTag {
@@ -6688,10 +6686,10 @@ namespace ts {
                     const { name, isBracketed } = parseBracketNameInPropertyAndParamTag();
                     skipWhitespace();
 
-                    if (!name) {
-                        parseErrorAtPosition(scanner.getStartPos(), 0, Diagnostics.Identifier_expected);
-                        return undefined;
-                    }
+                    //if (!name) {
+                    //    parseErrorAtPosition(scanner.getStartPos(), 0, Diagnostics.Identifier_expected);
+                    //    //return undefined;
+                    //}
 
                     let preName: Identifier, postName: Identifier;
                     if (typeExpression) {
@@ -6715,7 +6713,10 @@ namespace ts {
                     result.postParameterName = postName;
                     result.name = postName || preName;
                     result.isBracketed = isBracketed;
-                    return finishNode(result);
+                    //include trailing whitespace
+                    let end = scanner.getStartPos();
+                    while (ts.isWhiteSpaceSingleLine(scanner.getText().charCodeAt(end))) end++;
+                    return finishNode(result, end);
                 }
 
                 function parseReturnTag(atToken: AtToken, tagName: Identifier): JSDocReturnTag {
@@ -6940,7 +6941,7 @@ namespace ts {
                     return createJSDocIdentifier(tokenIsIdentifierOrKeyword(token()));
                 }
 
-                function createJSDocIdentifier(isIdentifier: boolean): Identifier {
+                function createJSDocIdentifier(isIdentifier: boolean): Identifier | undefined {
                     if (!isIdentifier) {
                         parseErrorAtCurrentToken(Diagnostics.Identifier_expected);
                         return undefined;

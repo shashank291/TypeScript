@@ -424,7 +424,7 @@ namespace ts {
         FirstNode = QualifiedName,
         FirstJSDocNode = JSDocTypeExpression,
         LastJSDocNode = JSDocLiteralType,
-        FirstJSDocTagNode = JSDocComment,
+        FirstJSDocTagNode = JSDocTag,
         LastJSDocTagNode = JSDocLiteralType
     }
 
@@ -2181,7 +2181,10 @@ namespace ts {
         typeExpression?: JSDocTypeExpression;
         /** the parameter name, if provided *after* the type (JSDoc-standard) */
         postParameterName?: Identifier;
-        /** the parameter name, regardless of the location it was provided */
+        /**
+         * the parameter name, regardless of the location it was provided
+         * Undefined in case of a parse error???
+         */
         name: Identifier;
         isBracketed: boolean;
     }
