@@ -2183,7 +2183,7 @@ namespace ts {
         postParameterName?: Identifier;
         /**
          * the parameter name, regardless of the location it was provided
-         * Undefined in case of a parse error???
+         * Undefined in case of a parse error??? No, always defined.
          */
         name: Identifier;
         isBracketed: boolean;
