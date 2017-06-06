@@ -133,7 +133,7 @@ namespace ts.JsDoc {
     }
 
     export function getJSDocParameterNameCompletions(tag: JSDocParameterTag): CompletionEntry[] {
-        const nameThusFar = tag.parameterName.text;
+        const nameThusFar = tag.name.text;
         const jsdoc = tag.parent;
         const fn = jsdoc.parent;
         if (!ts.isFunctionLike(fn)) {
@@ -144,7 +144,7 @@ namespace ts.JsDoc {
                 return undefined;
             }
             const name = param.name.text;
-            if (jsdoc.tags.some(t => t !== tag && isJSDocParameterTag(t) && t.parameterName.text === name)) {
+            if (jsdoc.tags.some(t => t !== tag && isJSDocParameterTag(t) && t.name.text === name)) {
                 return undefined;
             }
 

@@ -427,7 +427,7 @@ namespace ts.Completions {
                         const tagWithExpression = <JSDocTypeTag | JSDocParameterTag | JSDocReturnTag>tag;
                         if (tagWithExpression.typeExpression && tagWithExpression.typeExpression.pos < position && position < tagWithExpression.typeExpression.end) {
                             insideJsDocTagExpression = true;
-                        } else if (isJSDocParameterTag(tag) && (nodeIsMissing(tag.parameterName) || tag.parameterName.pos <= position && position <= tag.parameterName.end)) { //TODO: need nodeIsMissing?
+                        } else if (isJSDocParameterTag(tag) && (nodeIsMissing(tag.name) || tag.name.pos <= position && position <= tag.name.end)) { //TODO: need nodeIsMissing?
                             request = { kind: "JsDocParameterName", tag };
                         }
                         break;
